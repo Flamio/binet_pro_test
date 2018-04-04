@@ -16,7 +16,6 @@ class RegisterForm extends Model
     public $email;
     public $password;
     public $repeatPassword;
-    public $referer;
 
 
     public function rules()
@@ -35,20 +34,32 @@ class RegisterForm extends Model
             $this->addError($attribute,'Пароли не совпадают');
     }
 
-    public function createUser()
+    public function createUser($referer)
     {
         $user = new User();
-        $user->login = $this->email;
-        $user->setPassword($this->password);
-        $user->save();
+        $connection = $user->getDb();
+        $transaction = $connection->beginTransaction();
+        try {
 
-        $id = $user->getId();
-        if (!isset($referer))
-            $user->referer = $id;
-        else
-            $user->referer = $referer.'.'.$id;
+            $user->login = $this->email;
+            $user->setPassword($this->password);
+            $user->referer = '0';
+            $user->save();
 
-        $user->save();
-        return $user;
+            $id = $user->getId();
+            if (!isset($referer))
+                $user->referer = $id;
+            else
+                $user->referer = $referer . '.' . $id;
+
+            $user->save();
+            $transaction->commit();
+            return $user;
+        }
+        catch (\Exception $ex)
+        {
+            $transaction->rollBack();
+            return null;
+        }
     }
 }

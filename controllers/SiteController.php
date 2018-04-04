@@ -77,7 +77,7 @@ class SiteController extends Controller
         if( Yii::$app->request->post('RegisterForm')) {
             $model->attributes = Yii::$app->request->post('RegisterForm');
             if ($model->validate()) {
-                $user = $model->createUser();
+                $user = $model->createUser($referer);
                 Yii::$app->user->login($user);
                 return $this->goHome();
             }
