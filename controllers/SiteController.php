@@ -25,7 +25,7 @@ class SiteController extends Controller
             return $this->actionLogin();
         }
 
-        return $this->render('index');
+        return $this->render('index', ['user' => User::findIdentity(Yii::$app->user->getId())]);
     }
 
     /**
@@ -67,8 +67,11 @@ class SiteController extends Controller
         $this->goHome();
     }
 
-    public function actionRegister()
+    public function actionRegister($referer = null)
     {
+        if (!Yii::$app->user->isGuest)
+            $this->goHome();
+
         $model = new RegisterForm();
 
         if( Yii::$app->request->post('RegisterForm')) {

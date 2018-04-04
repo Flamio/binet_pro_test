@@ -9,11 +9,6 @@ namespace app\models;
 
 class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
 {
-
-    /*public $id;
-    public $password;
-    public $login;*/
-
     /**
      * Finds an identity by the given ID.
      * @param string|int $id the ID to be looked for

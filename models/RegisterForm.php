@@ -16,6 +16,7 @@ class RegisterForm extends Model
     public $email;
     public $password;
     public $repeatPassword;
+    public $referer;
 
 
     public function rules()
@@ -39,6 +40,14 @@ class RegisterForm extends Model
         $user = new User();
         $user->login = $this->email;
         $user->setPassword($this->password);
+        $user->save();
+
+        $id = $user->getId();
+        if (!isset($referer))
+            $user->referer = $id;
+        else
+            $user->referer = $referer.'.'.$id;
+
         $user->save();
         return $user;
     }
