@@ -25,7 +25,18 @@ class SiteController extends Controller
             return $this->actionLogin();
         }
 
-        return $this->render('index', ['user' => User::findIdentity(Yii::$app->user->getId())]);
+        $user = User::findIdentity(Yii::$app->user->getId());
+        $refererUser = null;
+        if ($user->getId() != $user->referer)
+        {
+            $ids = explode(".", $user->referer);
+            $refererId = $ids[count($ids)-2];
+            $refererUser = User::findIdentity($refererId);
+        }
+
+        $referrals = User::find()->where("referer LIKE :ref", ['ref' => $user->referer."%"])->andWhere('id != :id', ['id' => $user->id])->all();
+
+        return $this->render('index', ['user' => $user, "refererUser" => $refererUser, "referrals" => $referrals]);
     }
 
     /**
@@ -69,10 +80,17 @@ class SiteController extends Controller
 
     public function actionRegister($referer = null)
     {
-        if (!Yii::$app->user->isGuest)
-            $this->goHome();
-
         $model = new RegisterForm();
+
+        $refererUser = null;
+        if (isset($referer)) {
+            $refererUser = User::findOne(['referer' => $referer]);
+            if ($refererUser->getId() == Yii::$app->user->getId())
+            {
+                $refererUser = null;
+                $referer = null;
+            }
+        }
 
         if( Yii::$app->request->post('RegisterForm')) {
             $model->attributes = Yii::$app->request->post('RegisterForm');
@@ -83,6 +101,7 @@ class SiteController extends Controller
             }
         }
 
-        return $this->render('register', ['model' => $model]);
+
+        return $this->render('register', ['model' => $model, 'referer' => $refererUser]);
     }
 }

@@ -1,4 +1,4 @@
-<h1>Войдите</h1>
+<h1>Авторизация</h1>
 <?php
 use yii\widgets\ActiveForm;
 
@@ -8,7 +8,7 @@ $this->title = "Авторизация";
 
 <?= $form->field($model,'email')->textInput()?>
 
-<?= $form->field($model,'password')->passwordInput()?>
+<?= $form->field($model,'password')->passwordInput()->label("Пароль")?>
 
 <div>
     <button class="btn btn-success" type="submit">Войти</button>
