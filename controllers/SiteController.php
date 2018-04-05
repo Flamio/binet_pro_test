@@ -66,16 +66,13 @@ class SiteController extends Controller
         return $this->render('login',['model'=>$login_model]);
     }
 
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
+
     public function actionLogout()
     {
         Yii::$app->user->logout();
 
-        $this->goHome();
+        return $this->goHome();
+
     }
 
     public function actionRegister($referer = null)
@@ -83,12 +80,14 @@ class SiteController extends Controller
         $model = new RegisterForm();
 
         $refererUser = null;
+        $warning = null;
         if (isset($referer)) {
             $refererUser = User::findOne(['referer' => $referer]);
             if ($refererUser->getId() == Yii::$app->user->getId())
             {
                 $refererUser = null;
                 $referer = null;
+                $warning = "Нельзя стать рефералом самого себя!";
             }
         }
 
@@ -102,6 +101,6 @@ class SiteController extends Controller
         }
 
 
-        return $this->render('register', ['model' => $model, 'referer' => $refererUser]);
+        return $this->render('register', ['model' => $model, 'referer' => $refererUser, "warning" => $warning]);
     }
 }

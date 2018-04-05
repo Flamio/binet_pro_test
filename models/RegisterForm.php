@@ -24,8 +24,16 @@ class RegisterForm extends Model
 
             [['email','password', 'repeatPassword'],'required'],
             ['email','email'],
+            ['email', 'uniqueEmail'],
             [['password', 'repeatPassword'],'coincided']
         ];
+    }
+
+    public function uniqueEmail($attr,$params)
+    {
+        $user = User::findOne(['login'=>$this->email]);
+        if (isset($user))
+            $this->addError($attr,'Пользователь уже существует');
     }
 
     public function coincided($attribute, $params)
